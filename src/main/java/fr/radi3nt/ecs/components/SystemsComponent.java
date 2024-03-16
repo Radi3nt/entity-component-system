@@ -1,6 +1,5 @@
 package fr.radi3nt.ecs.components;
 
-import fr.radi3nt.ecs.entity.ECSEntity;
 import fr.radi3nt.ecs.system.ComponentSystem;
 
 public abstract class SystemsComponent extends EntityComponent {
