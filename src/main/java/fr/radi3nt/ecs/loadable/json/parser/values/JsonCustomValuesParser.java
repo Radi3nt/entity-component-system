@@ -7,7 +7,7 @@ import fr.radi3nt.ecs.loadable.json.parser.values.parsers.EnumJsonValueParser;
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.JsonValueParser;
 import fr.radi3nt.ecs.loadable.json.parser.values.registry.ClassJsonValueParserRegistry;
 import fr.radi3nt.ecs.loadable.json.parser.variables.VariableStorage;
-import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
+import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentFieldPersistent;
 import fr.radi3nt.json.JsonValue;
 
 import java.lang.reflect.Field;
@@ -26,8 +26,20 @@ public class JsonCustomValuesParser implements JsonValuesParser {
     public static Map<String, JsonValueParser> fromFields(ClassJsonValueParserRegistry registry, Class<?> aClass) {
         Map<String, JsonValueParser> variables = new HashMap<>();
         for (Field declaredField : aClass.getFields()) {
+            if (!declaredField.isAnnotationPresent(ComponentFieldPersistent.class)) {
+                continue;
+            }
+
             Class<?> currentClass = declaredField.getType();
-            variables.put(declaredField.getName(), parserForClass(registry, currentClass));
+
+            ComponentFieldPersistent componentFieldPersistent = declaredField.getAnnotation(ComponentFieldPersistent.class);
+            if (componentFieldPersistent.ids().length==0) {
+                variables.put(declaredField.getName(), parserForClass(registry, currentClass));
+            } else {
+                for (String id : componentFieldPersistent.ids()) {
+                    variables.put(id, parserForClass(registry, currentClass));
+                }
+            }
         }
         return variables;
     }

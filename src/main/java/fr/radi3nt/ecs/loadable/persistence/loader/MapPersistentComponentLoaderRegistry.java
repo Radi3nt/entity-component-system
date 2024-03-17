@@ -15,6 +15,6 @@ public class MapPersistentComponentLoaderRegistry implements PersistentComponent
 
     @Override
     public PersistentComponentLoader getLoaderFromClass(Class<? extends Component> componentType) {
-        return loaderMap.getOrDefault(componentType, new ReflectionPersistentComponentLoader(new ReflectionComponentBlueprint<>(componentType)));
+        return loaderMap.getOrDefault(componentType, new AnnotationReflectionPersistentComponentLoader(componentType));
     }
 }

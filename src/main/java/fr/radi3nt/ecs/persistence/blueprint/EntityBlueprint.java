@@ -27,15 +27,4 @@ public class EntityBlueprint {
         return entity;
     }
 
-    public EntityBlueprint extend(Collection<ComponentBlueprint> override) {
-        Map<Class<?>, ComponentBlueprint> blueprintMap = new LinkedHashMap<>();
-        for (ComponentBlueprint blueprint : blueprints) {
-            blueprintMap.put(blueprint.getComponentType(), blueprint);
-        }
-        for (ComponentBlueprint blueprint : override) {
-            blueprintMap.put(blueprint.getComponentType(), blueprint);
-        }
-        return new EntityBlueprint(new ArrayList<>(blueprintMap.values()));
-    }
-
 }

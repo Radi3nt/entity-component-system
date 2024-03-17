@@ -5,6 +5,5 @@ import fr.radi3nt.ecs.components.Component;
 public interface ComponentBlueprint {
 
     Component create();
-    Class<? extends Component> getComponentType();
 
 }

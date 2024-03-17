@@ -7,12 +7,10 @@ import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 
 public class PersistentDataComponentBlueprint implements ComponentBlueprint {
 
-    public final Class<? extends Component> componentClass;
     public final PersistentComponentLoader loader;
     public final PersistentData data;
 
-    public PersistentDataComponentBlueprint(Class<? extends Component> componentClass, PersistentComponentLoader loader, PersistentData data) {
-        this.componentClass = componentClass;
+    public PersistentDataComponentBlueprint(PersistentComponentLoader loader, PersistentData data) {
         this.loader = loader;
         this.data = data;
     }
@@ -25,11 +23,6 @@ public class PersistentDataComponentBlueprint implements ComponentBlueprint {
         } catch (ComponentPersistenceException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Class<? extends Component> getComponentType() {
-        return componentClass;
     }
 
 
