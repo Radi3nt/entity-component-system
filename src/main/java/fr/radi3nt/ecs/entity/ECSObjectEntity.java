@@ -1,7 +1,7 @@
 package fr.radi3nt.ecs.entity;
 
 import fr.radi3nt.ecs.components.Component;
-import fr.radi3nt.ecs.system.registerer.GlobalComponentSystemRegisterer;
+import fr.radi3nt.ecs.system.SystemHolder;
 
 import java.util.Map;
 import java.util.Optional;
@@ -10,16 +10,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ECSObjectEntity implements ECSEntity {
 
     private final Map<Class<?>, Component> components = new ConcurrentHashMap<>();
-    private final GlobalComponentSystemRegisterer componentSystemRegisterer;
+    private final SystemHolder systemHolder;
     private boolean enabled;
 
-    public ECSObjectEntity(GlobalComponentSystemRegisterer componentSystemRegisterer) {
-        this.componentSystemRegisterer = componentSystemRegisterer;
+    public ECSObjectEntity(SystemHolder systemHolder) {
+        this.systemHolder = systemHolder;
     }
-    
+
     @Override
     public <T extends Component> Optional<T> getComponent(Class<T> tClass) {
         return Optional.ofNullable((T) components.get(tClass));
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override
@@ -28,11 +33,6 @@ public class ECSObjectEntity implements ECSEntity {
         for (Component value : components.values()) {
             value.notifyEntityChangeEnabledState();
         }
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override
@@ -45,23 +45,23 @@ public class ECSObjectEntity implements ECSEntity {
     @Override
     public void addComponent(Component component) {
         Component old = components.put(component.getClass(), component);
-        if (old!=null) {
+        if (old != null) {
             removeComponent(old);
         }
         component.add(this);
-        componentSystemRegisterer.register(component);
+        systemHolder.add(component);
     }
 
     @Override
     public void removeComponent(Class<?> tClass) {
         Component old = components.remove(tClass);
-        if (old!=null) {
+        if (old != null) {
             removeComponent(old);
         }
     }
 
     private void removeComponent(Component old) {
-        componentSystemRegisterer.unregister(old);
+        systemHolder.remove(old);
         old.remove();
     }
 

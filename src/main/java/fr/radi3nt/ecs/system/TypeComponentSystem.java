@@ -2,7 +2,6 @@ package fr.radi3nt.ecs.system;
 
 import fr.radi3nt.ecs.components.Component;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +13,6 @@ public abstract class TypeComponentSystem<T extends Component> implements TypedC
     protected TypeComponentSystem(Class<T> type) {
         this.type = type;
     }
-
 
     @Override
     public void add(Component comp) {

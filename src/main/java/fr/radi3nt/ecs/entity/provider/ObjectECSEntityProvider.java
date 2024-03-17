@@ -2,18 +2,18 @@ package fr.radi3nt.ecs.entity.provider;
 
 import fr.radi3nt.ecs.entity.ECSEntity;
 import fr.radi3nt.ecs.entity.ECSObjectEntity;
-import fr.radi3nt.ecs.system.registerer.GlobalComponentSystemRegisterer;
+import fr.radi3nt.ecs.system.SystemHolder;
 
 public class ObjectECSEntityProvider implements ECSEntityProvider {
 
-    protected final GlobalComponentSystemRegisterer registerer;
+    protected final SystemHolder systemHolder;
 
-    public ObjectECSEntityProvider(GlobalComponentSystemRegisterer registerer) {
-        this.registerer = registerer;
+    public ObjectECSEntityProvider(SystemHolder systemHolder) {
+        this.systemHolder = systemHolder;
     }
 
     @Override
     public ECSEntity entity() {
-        return new ECSObjectEntity(registerer);
+        return new ECSObjectEntity(systemHolder);
     }
 }
