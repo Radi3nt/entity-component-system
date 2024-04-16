@@ -2,7 +2,6 @@ package fr.radi3nt.ecs.loadable.json.parser.values.parsers.number;
 
 import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.JsonValueParser;
-import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 import fr.radi3nt.json.JsonValue;
 
 import java.text.NumberFormat;

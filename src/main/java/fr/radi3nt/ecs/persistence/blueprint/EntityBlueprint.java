@@ -4,7 +4,7 @@ import fr.radi3nt.ecs.entity.ECSEntity;
 import fr.radi3nt.ecs.entity.provider.ECSEntityProvider;
 import fr.radi3nt.ecs.persistence.blueprint.comp.ComponentBlueprint;
 
-import java.util.*;
+import java.util.Collection;
 
 public class EntityBlueprint {
 

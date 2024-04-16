@@ -1,16 +1,18 @@
 package fr.radi3nt.ecs.loadable.persistence.loader;
 
 import fr.radi3nt.ecs.components.Component;
+import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentConstructorPersistent;
 import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentFieldPersistent;
 import fr.radi3nt.ecs.loadable.persistence.loader.loaders.MappedPersistentComponentLoader;
-import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentConstructorPersistent;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
 import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AnnotationReflectionPersistentComponentLoader extends MappedPersistentComponentLoader implements PersistentComponentLoader {
 
@@ -25,7 +27,7 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
         try {
             Component component = createConstructor(mappedPersistentData);
 
-            for (Field field : componentClass.getClass().getFields()) {
+            for (Field field : componentClass.getFields()) {
                 if (field.isAnnotationPresent(ComponentFieldPersistent.class)) {
                     ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
                     String[] id = componentPersistent.ids();

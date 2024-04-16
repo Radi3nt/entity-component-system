@@ -1,7 +1,6 @@
 package fr.radi3nt.ecs.loadable.persistence.loader;
 
 import fr.radi3nt.ecs.components.Component;
-import fr.radi3nt.ecs.persistence.blueprint.comp.ReflectionComponentBlueprint;
 
 import java.util.Map;
 

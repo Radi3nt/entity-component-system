@@ -1,11 +1,11 @@
 package fr.radi3nt.ecs.loadable.json;
 
-import fr.radi3nt.ecs.loadable.json.registry.ComponentBlueprintRegistry;
-import fr.radi3nt.ecs.loadable.json.registry.ComponentPersistenceType;
 import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
 import fr.radi3nt.ecs.loadable.json.parser.PersistentComponentParser;
 import fr.radi3nt.ecs.loadable.json.parser.variables.MapVariableStorage;
 import fr.radi3nt.ecs.loadable.json.parser.variables.VariableStorage;
+import fr.radi3nt.ecs.loadable.json.registry.ComponentBlueprintRegistry;
+import fr.radi3nt.ecs.loadable.json.registry.ComponentPersistenceType;
 import fr.radi3nt.ecs.persistence.blueprint.EntityBlueprint;
 import fr.radi3nt.ecs.persistence.blueprint.comp.ComponentBlueprint;
 import fr.radi3nt.ecs.persistence.blueprint.comp.PersistentDataComponentBlueprint;

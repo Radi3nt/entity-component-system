@@ -4,7 +4,6 @@ import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
 import fr.radi3nt.ecs.loadable.json.parser.values.JsonValuesParser;
 import fr.radi3nt.ecs.loadable.json.parser.variables.VariableStorage;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
-import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 import fr.radi3nt.json.JsonObject;
 import fr.radi3nt.json.JsonValue;
 
