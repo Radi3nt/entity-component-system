@@ -7,8 +7,4 @@ public interface Component {
     void add(ECSEntity entity);
     void remove();
 
-    Component setEnabled(boolean enabled);
-    boolean isEnabled();
-
-    void notifyEntityChangeEnabledState();
 }

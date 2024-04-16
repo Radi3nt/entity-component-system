@@ -2,8 +2,12 @@ package fr.radi3nt.ecs.main;
 
 import fr.radi3nt.ecs.entity.ECSEntity;
 import fr.radi3nt.ecs.entity.provider.ObjectECSEntityProvider;
-import fr.radi3nt.ecs.loadable.json.registry.ComponentPersistenceType;
+import fr.radi3nt.ecs.entity.world.ECSWorld;
+import fr.radi3nt.ecs.entity.world.ListingECSWorld;
+import fr.radi3nt.ecs.loadable.json.JsonEntityBlueprintLoader;
 import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
+import fr.radi3nt.ecs.loadable.json.parser.MappingPersistentComponentParser;
+import fr.radi3nt.ecs.loadable.json.parser.values.JsonCustomValuesParser;
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.*;
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.DoubleJsonValueParser;
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.FloatJsonValueParser;
@@ -11,15 +15,13 @@ import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.IntJsonValuePar
 import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.LongJsonValueParser;
 import fr.radi3nt.ecs.loadable.json.parser.values.registry.ClassJsonValueParserRegistry;
 import fr.radi3nt.ecs.loadable.json.parser.values.registry.MapClassJsonValueParserRegistry;
-import fr.radi3nt.ecs.loadable.json.JsonEntityBlueprintLoader;
-import fr.radi3nt.ecs.loadable.json.parser.values.JsonCustomValuesParser;
+import fr.radi3nt.ecs.loadable.json.registry.ComponentPersistenceType;
 import fr.radi3nt.ecs.loadable.json.registry.MapComponentBlueprintRegistry;
-import fr.radi3nt.ecs.loadable.json.parser.MappingPersistentComponentParser;
 import fr.radi3nt.ecs.main.components.*;
 import fr.radi3nt.ecs.persistence.blueprint.EntityBlueprint;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
 import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
-import fr.radi3nt.ecs.system.SystemHolder;
+import fr.radi3nt.ecs.system.ComponentMapper;
 import fr.radi3nt.json.Json;
 import fr.radi3nt.json.JsonValue;
 
@@ -72,10 +74,10 @@ public class MainECSDemo {
         JsonValue object = Json.parse(new InputStreamReader(MainECSDemo.class.getResourceAsStream("/demo_entity.json")));
         EntityBlueprint blueprint = loader.load(object.asObject());
 
-        ECSEntity entity = blueprint.create(new ObjectECSEntityProvider(new SystemHolder(new ArrayList<>())));
-        entity.setEnabled(true);
-
-        entity.getComponent(HealthComponent.class).ifPresent((healthComponent -> healthComponent.health=0));
+        ECSWorld world = new ListingECSWorld(new ComponentMapper(new ArrayList<>()));
+        ECSEntity entity = blueprint.create(new ObjectECSEntityProvider());
+        world.addEntity(entity);
+        entity.getComponent(HealthComponent.class).health = 0;
 
         DeathOnHealthReachesZeroSystem.INSTANCE.update();
 

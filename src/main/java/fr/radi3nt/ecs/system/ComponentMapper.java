@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class SystemHolder {
+public class ComponentMapper {
 
     protected final Collection<ComponentSystem> systems;
 
-    public SystemHolder(Collection<ComponentSystem> systems) {
+    public ComponentMapper(Collection<ComponentSystem> systems) {
         this.systems = systems;
     }
 
-    public SystemHolder(ComponentSystem... systems) {
+    public ComponentMapper(ComponentSystem... systems) {
         this(new ArrayList<>(Arrays.asList(systems)));
     }
 

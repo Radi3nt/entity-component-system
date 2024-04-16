@@ -1,55 +1,55 @@
 package fr.radi3nt.ecs.entity;
 
 import fr.radi3nt.ecs.components.Component;
-import fr.radi3nt.ecs.system.SystemHolder;
+import fr.radi3nt.ecs.entity.world.ECSWorld;
+import fr.radi3nt.ecs.system.ComponentMapper;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ECSObjectEntity implements ECSEntity {
 
     private final Map<Class<?>, Component> components = new ConcurrentHashMap<>();
-    private final SystemHolder systemHolder;
-    private boolean enabled;
+    private ComponentMapper componentMapper;
 
-    public ECSObjectEntity(SystemHolder systemHolder) {
-        this.systemHolder = systemHolder;
+    public ECSObjectEntity() {
+
     }
 
     @Override
-    public <T extends Component> Optional<T> getComponent(Class<T> tClass) {
-        return Optional.ofNullable((T) components.get(tClass));
+    public <T extends Component> T getComponent(Class<T> tClass) {
+        return (T) components.get(tClass);
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setWorld(ECSWorld world) {
+        componentMapper = world.getComponentMapper();
         for (Component value : components.values()) {
-            value.notifyEntityChangeEnabledState();
+            actuallyAdd(value);
         }
     }
 
     @Override
-    public void destroy() {
+    public void removeFromWorld() {
         for (Component value : components.values()) {
-            removeComponent(value);
+            actuallyRemove(value);
         }
+        componentMapper = null;
     }
 
     @Override
     public void addComponent(Component component) {
         Component old = components.put(component.getClass(), component);
-        if (old != null) {
-            removeComponent(old);
+        if (componentMapper!=null) {
+            if (old != null)
+                actuallyRemove(old);
+            actuallyAdd(component);
         }
+    }
+
+    private void actuallyAdd(Component component) {
         component.add(this);
-        systemHolder.add(component);
+        componentMapper.add(component);
     }
 
     @Override
@@ -61,7 +61,13 @@ public class ECSObjectEntity implements ECSEntity {
     }
 
     private void removeComponent(Component old) {
-        systemHolder.remove(old);
+        if (componentMapper!=null) {
+            actuallyRemove(old);
+        }
+    }
+
+    private void actuallyRemove(Component old) {
+        componentMapper.remove(old);
         old.remove();
     }
 
