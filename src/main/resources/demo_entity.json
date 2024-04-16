@@ -1,0 +1,43 @@
+{
+    "id": "demo_entity",
+    "variables": {
+        "max_health": 4,
+        "zeta": 22.8
+    },
+    "components": {
+        "health": {
+            "health": {
+                "type": "constant",
+                "name": "max_health"
+            }
+        },
+        "maxHealth": {
+            "maxHealth": {
+                "type": "constant",
+                "name": "max_health"
+            }
+        },
+        "deathState": {
+        },
+        "deathOnHealthReachesZero": {
+        },
+        "movement": {
+            "constants": [
+                {
+                    "type": "constant",
+                    "name": "zeta"
+                },
+                4,
+                2
+            ],
+            "properties": {
+                "f": {
+                    "type": "constant",
+                    "name": "zeta"
+                },
+                "z": 3,
+                "r": 5
+            }
+        }
+    }
+}
