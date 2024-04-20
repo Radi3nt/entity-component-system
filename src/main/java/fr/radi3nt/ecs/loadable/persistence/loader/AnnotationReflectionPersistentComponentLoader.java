@@ -27,7 +27,7 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
         try {
             Component component = createConstructor(mappedPersistentData);
 
-            for (Field field : componentClass.getFields()) {
+            for (Field field : componentClass.getClass().getFields()) {
                 if (field.isAnnotationPresent(ComponentFieldPersistent.class)) {
                     ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
                     String[] id = componentPersistent.ids();
