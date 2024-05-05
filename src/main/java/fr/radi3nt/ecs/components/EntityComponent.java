@@ -16,4 +16,7 @@ public abstract class EntityComponent implements Component {
         current = null;
     }
 
+    public boolean isInWorld() {
+        return current!=null && !current.isDestroyed();
+    }
 }

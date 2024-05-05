@@ -1,9 +1,11 @@
 package fr.radi3nt.ecs.persistence.blueprint;
 
+import fr.radi3nt.ecs.components.Component;
 import fr.radi3nt.ecs.entity.ECSEntity;
-import fr.radi3nt.ecs.entity.provider.ECSEntityProvider;
 import fr.radi3nt.ecs.persistence.blueprint.comp.ComponentBlueprint;
+import fr.radi3nt.ecs.world.ECSEntityProvider;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class EntityBlueprint {
@@ -15,16 +17,17 @@ public class EntityBlueprint {
     }
 
     public ECSEntity create(ECSEntityProvider provider) {
-        ECSEntity entity = provider.entity();
-        return create(entity);
+        Collection<Component> components = createComponents();
+        return provider.create(components);
     }
 
-    private ECSEntity create(ECSEntity entity) {
+    private Collection<Component> createComponents() {
+        Collection<Component> components = new ArrayList<>();
+
         for (ComponentBlueprint blueprint : blueprints) {
-            entity.addComponent(blueprint.create());
+            components.add(blueprint.create());
         }
 
-        return entity;
+        return components;
     }
-
 }

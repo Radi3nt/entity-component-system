@@ -1,18 +1,21 @@
 package fr.radi3nt.ecs.main.components;
 
 import fr.radi3nt.ecs.entity.ECSEntity;
-import fr.radi3nt.ecs.system.TypeComponentSystem;
+import fr.radi3nt.ecs.world.ECSWorld;
 
-public class DeathOnHealthReachesZeroSystem extends TypeComponentSystem<DeathOnHealthReachesZeroComponent> {
+import java.util.Iterator;
 
-    public static final DeathOnHealthReachesZeroSystem INSTANCE = new DeathOnHealthReachesZeroSystem();
+public class DeathOnHealthReachesZeroSystem {
 
-    private DeathOnHealthReachesZeroSystem() {
-        super(DeathOnHealthReachesZeroComponent.class);
+    private final ECSWorld world;
+
+    public DeathOnHealthReachesZeroSystem(ECSWorld world) {
+        this.world = world;
     }
 
     public void update() {
-        for (DeathOnHealthReachesZeroComponent component : INSTANCE.components) {
+        for (Iterator<DeathOnHealthReachesZeroComponent> it = world.getComponentIterator(DeathOnHealthReachesZeroComponent.class); it.hasNext(); ) {
+            DeathOnHealthReachesZeroComponent component = it.next();
             if (component.isEnabled()) {
                 ECSEntity current = component.current;
                 HealthComponent healthComponent = current.getComponent(HealthComponent.class);
