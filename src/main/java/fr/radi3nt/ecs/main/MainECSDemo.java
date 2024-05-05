@@ -1,9 +1,6 @@
 package fr.radi3nt.ecs.main;
 
 import fr.radi3nt.ecs.entity.ECSEntity;
-import fr.radi3nt.ecs.entity.provider.ObjectECSEntityProvider;
-import fr.radi3nt.ecs.entity.world.ECSWorld;
-import fr.radi3nt.ecs.entity.world.ListingECSWorld;
 import fr.radi3nt.ecs.loadable.json.JsonEntityBlueprintLoader;
 import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
 import fr.radi3nt.ecs.loadable.json.parser.MappingPersistentComponentParser;
@@ -21,13 +18,13 @@ import fr.radi3nt.ecs.main.components.*;
 import fr.radi3nt.ecs.persistence.blueprint.EntityBlueprint;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
 import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
-import fr.radi3nt.ecs.system.ComponentMapper;
+import fr.radi3nt.ecs.world.ECSWorld;
+import fr.radi3nt.ecs.world.ListingECSWorld;
 import fr.radi3nt.json.Json;
 import fr.radi3nt.json.JsonValue;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,12 +71,12 @@ public class MainECSDemo {
         JsonValue object = Json.parse(new InputStreamReader(MainECSDemo.class.getResourceAsStream("/demo_entity.json")));
         EntityBlueprint blueprint = loader.load(object.asObject());
 
-        ECSWorld world = new ListingECSWorld(new ComponentMapper(new ArrayList<>()));
-        ECSEntity entity = blueprint.create(new ObjectECSEntityProvider());
-        world.addEntity(entity);
+        ECSWorld world = new ListingECSWorld();
+        ECSEntity entity = blueprint.create(world);
         entity.getComponent(HealthComponent.class).health = 0;
 
-        DeathOnHealthReachesZeroSystem.INSTANCE.update();
+        DeathOnHealthReachesZeroSystem onHealthReachesZeroSystem = new DeathOnHealthReachesZeroSystem(world);
+        onHealthReachesZeroSystem.update();
 
         System.out.println("hey");
     }
