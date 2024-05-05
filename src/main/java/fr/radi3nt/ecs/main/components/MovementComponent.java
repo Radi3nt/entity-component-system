@@ -7,9 +7,8 @@ import fr.radi3nt.ecs.main.DynamicsConstants;
 
 public class MovementComponent extends EntityComponent {
 
-    @ComponentFieldPersistent
+    @ComponentFieldPersistent(ids = {"constants", "properties"})
     public DynamicsConstants constants;
-    public DynamicsConstants properties;
 
     @ComponentConstructorPersistent(fields = "constants")
     public MovementComponent(DynamicsConstants constants) {
