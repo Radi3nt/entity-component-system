@@ -1,0 +1,8 @@
+{
+    "id": "test_entity",
+    "variables": {
+    },
+    "components": {
+        "testComponent": {}
+    }
+}
