@@ -18,6 +18,6 @@ public class MapPersistentComponentParserRegistry implements PersistentComponent
 
     @Override
     public PersistentComponentParser getParserFromClass(Class<?> componentType) {
-        return parserMap.getOrDefault(componentType, new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFields(classParserRegistry, componentType))));
+        return parserMap.getOrDefault(componentType, new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFieldsAndBuilders(classParserRegistry, componentType))));
     }
 }

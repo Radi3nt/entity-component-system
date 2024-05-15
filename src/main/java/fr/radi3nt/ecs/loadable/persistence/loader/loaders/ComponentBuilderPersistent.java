@@ -6,9 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = ElementType.CONSTRUCTOR)
-public @interface ComponentConstructorPersistent {
-
-    String[] fields() default {};
+@Target(value = {ElementType.CONSTRUCTOR, ElementType.METHOD})
+public @interface ComponentBuilderPersistent {
 
 }

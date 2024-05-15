@@ -5,10 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(value = RetentionPolicy.RUNTIME)
-@Target(value = ElementType.FIELD)
-public @interface ComponentFieldPersistent {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = {ElementType.PARAMETER})
+public @interface ComponentParameterFieldPersistent {
 
-    String[] ids() default {};
+    String fieldName();
 
 }

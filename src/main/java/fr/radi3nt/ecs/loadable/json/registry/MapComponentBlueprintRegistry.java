@@ -1,5 +1,7 @@
 package fr.radi3nt.ecs.loadable.json.registry;
 
+import fr.radi3nt.ecs.loadable.json.exceptions.ComponentPersistenceTypeNotFound;
+
 import java.util.Map;
 
 public class MapComponentBlueprintRegistry implements ComponentBlueprintRegistry {
@@ -12,6 +14,9 @@ public class MapComponentBlueprintRegistry implements ComponentBlueprintRegistry
 
     @Override
     public ComponentPersistenceType get(String name) {
-        return types.get(name);
+        ComponentPersistenceType type = types.get(name);
+        if (type==null)
+            throw new ComponentPersistenceTypeNotFound("Could not find persistence type for id '" + name + "'");
+        return type;
     }
 }

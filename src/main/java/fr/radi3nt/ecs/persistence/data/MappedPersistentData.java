@@ -15,6 +15,10 @@ public class MappedPersistentData implements PersistentData {
         return keyValue.get(key);
     }
 
+    public boolean exists(String key) {
+        return keyValue.containsKey(key);
+    }
+
     public String[] getKeys() {
         return keyValue.keySet().toArray(new String[0]);
     }
