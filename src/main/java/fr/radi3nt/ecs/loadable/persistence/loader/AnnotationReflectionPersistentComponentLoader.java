@@ -1,18 +1,16 @@
 package fr.radi3nt.ecs.loadable.persistence.loader;
 
 import fr.radi3nt.ecs.components.Component;
-import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentConstructorPersistent;
-import fr.radi3nt.ecs.loadable.persistence.loader.loaders.ComponentFieldPersistent;
-import fr.radi3nt.ecs.loadable.persistence.loader.loaders.MappedPersistentComponentLoader;
+import fr.radi3nt.ecs.loadable.persistence.loader.loaders.*;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
 import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AnnotationReflectionPersistentComponentLoader extends MappedPersistentComponentLoader implements PersistentComponentLoader {
 
@@ -25,33 +23,33 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
     @Override
     protected Component loadInternal(MappedPersistentData mappedPersistentData) throws ComponentPersistenceException {
         try {
-            Component component = createConstructor(mappedPersistentData);
+            Collection<String> alreadyUsed = new ArrayList<>();
+            Component component = createComponent(mappedPersistentData, alreadyUsed);
 
             for (Field field : componentClass.getClass().getFields()) {
-                if (field.isAnnotationPresent(ComponentFieldPersistent.class)) {
-                    ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
-                    String[] id = componentPersistent.ids();
-                    Object o = null;
+                ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
+                if (componentPersistent==null)
+                    continue;
+                String[] id = componentPersistent.ids();
+                Object o = null;
 
-                    if (id.length==0) {
-                        o = mappedPersistentData.get(field.getName());
-                    } else if (id.length==1) {
-                        o = mappedPersistentData.get(id[0]);
-                    } else {
-                        for (String s : id) {
-                            o = mappedPersistentData.get(s);
-                            if (o!=null) {
-                                break;
-                            }
+                if (id.length==0) {
+                    o = possiblyGet(mappedPersistentData, alreadyUsed, field.getName());
+                } else {
+                    for (String s : id) {
+                        o = possiblyGet(mappedPersistentData, alreadyUsed, s);
+                        if (o!=null) {
+                            break;
                         }
                     }
-
-
-                    if (componentPersistent.required() && o == null)
-                        throw new UnsupportedOperationException("Could not load component, since the required field '" + field.getName() + "' is not set");
-                    field.setAccessible(true);
-                    field.set(componentClass, o);
                 }
+
+
+                if (o == null)
+                    continue;
+
+                field.setAccessible(true);
+                field.set(componentClass, o);
             }
 
             return component;
@@ -60,47 +58,76 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
         }
     }
 
-    private Component createConstructor(MappedPersistentData mappedPersistentData) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
-        List<Constructor<?>> constructors = new ArrayList<>(Arrays.asList(componentClass.getDeclaredConstructors()));
-        constructors.sort((o1, o2) -> Integer.compare(o2.getParameterCount(), o1.getParameterCount()));
-        for (Constructor<?> declaredConstructor : constructors) {
-            if (declaredConstructor.isAnnotationPresent(ComponentConstructorPersistent.class)) {
-                ComponentConstructorPersistent constructorPersistent = declaredConstructor.getAnnotation(ComponentConstructorPersistent.class);
-                String[] fields = constructorPersistent.fields();
-                Object[] initArgs = new Object[declaredConstructor.getParameterCount()];
+    private static Object possiblyGet(MappedPersistentData mappedPersistentData, Collection<String> alreadyUsed, String name) {
+        return alreadyUsed.contains(name) ? null : mappedPersistentData.get(name);
+    }
 
-                boolean failed = false;
-                for (int i = 0, fieldsLength = fields.length; i < fieldsLength; i++) {
-                    String field = fields[i];
-                    Object o = findObjectWithName(mappedPersistentData, field);
-                    if (o==null) {
-                        failed = true;
-                        break;
-                    }
-                    initArgs[i] = o;
-                }
-                if (failed)
+    private Component createComponent(MappedPersistentData mappedPersistentData, Collection<String> alreadyUsed) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<Executable> constructors = new ArrayList<>(Arrays.asList(componentClass.getDeclaredConstructors()));
+        constructors.addAll(Arrays.asList(componentClass.getDeclaredMethods()).stream().filter(method -> Modifier.isStatic(method.getModifiers()) && method.getReturnType().isAssignableFrom(componentClass)).collect(Collectors.toList()));
+
+        constructors.sort((o1, o2) -> Integer.compare(o2.getParameterCount(), o1.getParameterCount()));
+        for (Executable executable : constructors) {
+            if (executable.isAnnotationPresent(ComponentBuilderPersistent.class)) {
+                Collection<Object> parameterArguments = new ArrayList<>();
+                Collection<String> currentAlreadyUsed = new ArrayList<>();
+                if (!searchParameters(mappedPersistentData, executable, parameterArguments, currentAlreadyUsed))
                     continue;
-                return (Component) declaredConstructor.newInstance(initArgs);
+
+                alreadyUsed.addAll(currentAlreadyUsed);
+
+                if (executable instanceof Constructor<?>)
+                    return (Component) ((Constructor<?>) executable).newInstance(parameterArguments.toArray(new Object[0]));
+                if (executable instanceof Method)
+                    return (Component) ((Method) executable).invoke(null, parameterArguments.toArray(new Object[]{0}));
             }
         }
 
         throw new UnsupportedOperationException("Could not create component: no constructor available in '" + componentClass.getSimpleName() + "' matching the required conditions");
     }
 
-    private Object findObjectWithName(MappedPersistentData persistentData, String fieldName) throws NoSuchFieldException {
-        Field field = componentClass.getField(fieldName);
-        if (field.isAnnotationPresent(ComponentFieldPersistent.class)) {
-            ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
-            String[] ids = componentPersistent.ids();
-            if (ids.length==0)
-                return persistentData.get(fieldName);
+    private static boolean searchParameters(MappedPersistentData mappedPersistentData, Executable declaredConstructor, Collection<Object> parameterArguments, Collection<String> currentAlreadyUsed) {
+        for (Parameter parameter : declaredConstructor.getParameters()) {
+            String[] ids = getIds(parameter);
+            boolean found = false;
             for (String id : ids) {
-                Object o = persistentData.get(id);
-                if (o!=null)
-                    return o;
+                Object o = mappedPersistentData.get(id);
+                if (o==null)
+                    continue;
+
+                parameterArguments.add(o);
+                currentAlreadyUsed.add(id);
+                found = true;
+                break;
             }
+            if (!found)
+                return false;
         }
-        return null;
+
+        return true;
+    }
+
+    private static String[] getIds(Parameter parameter)  {
+        ComponentParameterFieldPersistent fieldPersistent = parameter.getAnnotation(ComponentParameterFieldPersistent.class);
+        if (fieldPersistent!=null) {
+            Field declaredField;
+            try {
+                declaredField = parameter.getDeclaringExecutable().getDeclaringClass().getDeclaredField(fieldPersistent.fieldName());
+            } catch (NoSuchFieldException e) {
+                throw new UnsupportedOperationException("Component builder is invalid");
+            }
+            ComponentFieldPersistent annotation = declaredField.getAnnotation(ComponentFieldPersistent.class);
+            if (annotation==null)
+                throw new UnsupportedOperationException("Component builder is invalid");
+            String[] ids = annotation.ids();
+            if (ids.length==0)
+                return new String[]{declaredField.getName()};
+            return ids;
+        }
+
+        ComponentParameterPersistent annotation = parameter.getAnnotation(ComponentParameterPersistent.class);
+        if (annotation==null)
+            throw new UnsupportedOperationException("Component builder is invalid");
+        return annotation.ids();
     }
 }

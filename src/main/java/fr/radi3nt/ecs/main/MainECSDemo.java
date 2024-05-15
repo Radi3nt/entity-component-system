@@ -51,7 +51,7 @@ public class MainECSDemo {
                 float[] array = (float[]) parser.parseCustom(value, path, storage);
                 return new DynamicsConstants(array[0], array[1], array[2]);
             } else if (value.isObject()) {
-                MappedPersistentData data = new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFields(parserRegistry, DynamicsConstants.class))).parse(value.asObject(), storage);
+                MappedPersistentData data = new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFieldsAndBuilders(parserRegistry, DynamicsConstants.class))).parse(value.asObject(), storage);
                 return new DynamicsConstants((float) data.get("f"), (float) data.get("z"), (float) data.get("r"));
             }
             return null;

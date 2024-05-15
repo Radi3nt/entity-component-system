@@ -14,6 +14,7 @@ import fr.radi3nt.json.JsonValue;
 import fr.radi3nt.json.WriterConfig;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class JsonEntityBlueprintLoader {
         JsonObject components = getObjectSafely(entityObject, "components");
         VariableStorage variableStorage = getVariableStorage(entityObject);
 
-        Map<ComponentPersistenceType, ComponentBlueprint> componentBlueprints = new HashMap<>();
+        Map<ComponentPersistenceType, ComponentBlueprint> componentBlueprints = new LinkedHashMap<>();
 
         for (JsonObject.Member component : components) {
             String componentId = component.getName();

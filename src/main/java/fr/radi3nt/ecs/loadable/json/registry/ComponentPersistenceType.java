@@ -19,6 +19,6 @@ public class ComponentPersistenceType {
     }
 
     public static ComponentPersistenceType fromReflection(ClassJsonValueParserRegistry registry, Class<? extends Component> aClass) {
-        return new ComponentPersistenceType(new AnnotationReflectionPersistentComponentLoader(aClass), new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFields(registry, aClass))));
+        return new ComponentPersistenceType(new AnnotationReflectionPersistentComponentLoader(aClass), new MappingPersistentComponentParser('.', new JsonCustomValuesParser(JsonCustomValuesParser.fromFieldsAndBuilders(registry, aClass))));
     }
 }

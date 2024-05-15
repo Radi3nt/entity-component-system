@@ -1,7 +1,7 @@
 package fr.radi3nt.ecs.loadable.json.parser;
 
 import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
-import fr.radi3nt.ecs.loadable.json.parser.values.JsonValuesParser;
+import fr.radi3nt.ecs.loadable.json.parser.values.JsonCustomValuesParser;
 import fr.radi3nt.ecs.loadable.json.parser.variables.VariableStorage;
 import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
 import fr.radi3nt.json.JsonObject;
@@ -13,9 +13,9 @@ import java.util.Map;
 public class MappingPersistentComponentParser implements PersistentComponentParser {
 
     private final char nestingSeparatorChar;
-    private final JsonValuesParser customValues;
+    private final JsonCustomValuesParser customValues;
 
-    public MappingPersistentComponentParser(char nestingSeparatorChar, JsonValuesParser customValues) {
+    public MappingPersistentComponentParser(char nestingSeparatorChar, JsonCustomValuesParser customValues) {
         this.nestingSeparatorChar = nestingSeparatorChar;
         this.customValues = customValues;
     }
@@ -23,24 +23,24 @@ public class MappingPersistentComponentParser implements PersistentComponentPars
     @Override
     public MappedPersistentData parse(JsonObject jsonObject, VariableStorage variableStorage) throws JsonComponentParseException {
         Map<String, Object> keyValue = new HashMap<>();
-        addEntries(keyValue, "", jsonObject, "", variableStorage);
+        addEntries(keyValue, "", jsonObject, variableStorage);
         return new MappedPersistentData(keyValue);
     }
 
-    private void addEntries(Map<String, Object> keyValue, String currentPath, JsonObject object, String currentSeparator, VariableStorage variableStorage) throws JsonComponentParseException {
+    private void addEntries(Map<String, Object> keyValue, String currentPath, JsonObject object, VariableStorage variableStorage) throws JsonComponentParseException {
         for (JsonObject.Member member : object) {
-            String id = currentPath + currentSeparator + member.getName();
+            String id = currentPath + member.getName();
             JsonValue value = member.getValue();
 
-            if (customValues.isCustomValue(value, id)) {
+            if (customValues.isCustomValue(id)) {
                 keyValue.put(id, customValues.parseCustom(value, id, variableStorage));
                 continue;
             }
 
             if (value.isObject()) {
-                addEntries(keyValue, id, value.asObject(), String.valueOf(nestingSeparatorChar), variableStorage);
+                addEntries(keyValue, id + nestingSeparatorChar, value.asObject(), variableStorage);
             } else {
-                System.err.println("Ignoring value at path " + id);
+                System.err.println("Value at path " + id + " is not registered, skipping");
             }
         }
     }
