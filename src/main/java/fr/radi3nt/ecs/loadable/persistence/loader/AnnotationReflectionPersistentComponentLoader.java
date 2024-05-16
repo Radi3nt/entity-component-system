@@ -26,7 +26,7 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
             Collection<String> alreadyUsed = new ArrayList<>();
             Component component = createComponent(mappedPersistentData, alreadyUsed);
 
-            for (Field field : componentClass.getClass().getFields()) {
+            for (Field field : componentClass.getFields()) {
                 ComponentFieldPersistent componentPersistent = field.getAnnotation(ComponentFieldPersistent.class);
                 if (componentPersistent==null)
                     continue;
@@ -49,7 +49,7 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
                     continue;
 
                 field.setAccessible(true);
-                field.set(componentClass, o);
+                field.set(component, o);
             }
 
             return component;
