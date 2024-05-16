@@ -5,6 +5,8 @@ import fr.radi3nt.ecs.entity.ECSEntity;
 import fr.radi3nt.ecs.entity.HandledEntity;
 import fr.radi3nt.ecs.world.handle.LocalMapHandle;
 import fr.radi3nt.ecs.world.handle.WorldComponentStorage;
+import fr.radi3nt.ecs.world.iterator.CollectionIteratorProvider;
+import fr.radi3nt.ecs.world.iterator.ComponentIteratorProvider;
 import fr.radi3nt.ecs.world.listener.ComponentListener;
 
 import java.util.ArrayList;
@@ -40,6 +42,12 @@ public class ListingECSWorld implements ECSWorld {
         if (componentCollection==null)
             return Collections.emptyIterator();
         return new ArrayList<>(componentCollection).iterator();
+    }
+
+    @Override
+    public <T extends Component> ComponentIteratorProvider<T> getComponentProvider(Class<T> componentClass) {
+        Collection<T> componentCollection = (Collection<T>) worldComponentStorage.getComponentCollection(componentClass);
+        return new CollectionIteratorProvider<>(componentCollection);
     }
 
     @Override

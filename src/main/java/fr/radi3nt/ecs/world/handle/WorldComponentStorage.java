@@ -14,7 +14,7 @@ public class WorldComponentStorage {
     private final Map<Class<? extends Component>, Collection<ComponentListener>> listeners = new ConcurrentHashMap<>();
 
     public void addComponent(Component component) {
-        Collection<Component> allComponentOfThatType = allComponents.computeIfAbsent(component.getClass(), aClass -> new ArrayList<>());
+        Collection<Component> allComponentOfThatType = getComponentCollection(component.getClass());
         allComponentOfThatType.add(component);
 
         notifyAddListeners(component);
@@ -45,6 +45,10 @@ public class WorldComponentStorage {
         for (ComponentListener componentListener : componentListeners) {
             componentListener.removed(component);
         }
+    }
+
+    public Collection<Component> getComponentCollection(Class<? extends Component> componentClass) {
+        return allComponents.computeIfAbsent(componentClass, aClass -> new ArrayList<>());
     }
 
     public Map<Class<? extends Component>, Collection<Component>> getAllComponents() {
