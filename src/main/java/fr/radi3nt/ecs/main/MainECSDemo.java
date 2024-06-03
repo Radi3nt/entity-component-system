@@ -34,17 +34,7 @@ public class MainECSDemo {
         Map<Class<?>, JsonValueParser> parserMap = new HashMap<>();
         ClassJsonValueParserRegistry parserRegistry = new MapClassJsonValueParserRegistry(parserMap);
 
-        parserMap.put(Integer.class, IntJsonValueParser.INSTANCE);
-        parserMap.put(int.class, IntJsonValueParser.INSTANCE);
-        parserMap.put(Long.class, LongJsonValueParser.INSTANCE);
-        parserMap.put(long.class, LongJsonValueParser.INSTANCE);
-        parserMap.put(Float.class, FloatJsonValueParser.INSTANCE);
-        parserMap.put(float.class, FloatJsonValueParser.INSTANCE);
-        parserMap.put(Double.class, DoubleJsonValueParser.INSTANCE);
-        parserMap.put(double.class, DoubleJsonValueParser.INSTANCE);
-        parserMap.put(Boolean.class, BooleanJsonValueParser.INSTANCE);
-        parserMap.put(boolean.class, BooleanJsonValueParser.INSTANCE);
-        parserMap.put(String.class, StringJsonValueParser.INSTANCE);
+        MapClassJsonValueParserRegistry.putNativeParsers(parserMap);
         parserMap.put(DynamicsConstants.class, (value, path, storage) -> {
             if (value.isArray()) {
                 ArrayJsonValueParser parser = new ArrayJsonValueParser(float.class, new EncapsulatingVariableJsonValueParser(FloatJsonValueParser.INSTANCE));
