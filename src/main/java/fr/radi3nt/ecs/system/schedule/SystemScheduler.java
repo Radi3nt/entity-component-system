@@ -13,6 +13,10 @@ public class SystemScheduler {
         systemUpdatable.add(updatable);
     }
 
+    public SystemSchedule schedule(SystemUpdateKey key) {
+        return new SystemSchedule(this, key);
+    }
+
     public void update(SystemUpdateKey update, float delta) {
         Collection<SystemUpdatable> systemUpdatable = systemUpdatableMap.get(update);
         if (systemUpdatable == null)

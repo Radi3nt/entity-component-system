@@ -15,7 +15,7 @@ public class EncapsulatingVariableJsonValueParser implements JsonValueParser {
 
     @Override
     public Object parseCustom(JsonValue value, String path, VariableStorage storage) throws JsonComponentParseException {
-        if (value.isObject()) {
+        if (value!=null && value.isObject()) {
             JsonObject jsonObject = value.asObject();
             JsonValue stringValue = jsonObject.get("type");
             if (stringValue!=null && stringValue.isString() && stringValue.asString().equalsIgnoreCase("constant")) {
