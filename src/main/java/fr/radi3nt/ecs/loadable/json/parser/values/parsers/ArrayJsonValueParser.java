@@ -26,7 +26,7 @@ public class ArrayJsonValueParser implements JsonValueParser {
 
         Object objectArray = Array.newInstance(objectClass, array.size());
         for (int i = 0; i < array.size(); i++) {
-            Array.set(objectArray, i, objectParser.parseCustom(array.get(i), path + "[" + i + "]", storage));
+            Array.set(objectArray, i, new EncapsulatingVariableJsonValueParser(objectParser).parseCustom(array.get(i), path + "[" + i + "]", storage));
         }
         return objectArray;
     }
