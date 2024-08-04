@@ -10,6 +10,7 @@ import fr.radi3nt.ecs.persistence.blueprint.comp.ComponentBlueprint;
 import fr.radi3nt.ecs.persistence.blueprint.comp.PersistentDataComponentBlueprint;
 import fr.radi3nt.ecs.persistence.data.PersistentData;
 import fr.radi3nt.json.JsonObject;
+import fr.radi3nt.json.JsonParseException;
 import fr.radi3nt.json.JsonValue;
 import fr.radi3nt.json.WriterConfig;
 
@@ -34,11 +35,17 @@ public class JsonEntityBlueprintLoader {
 
         for (JsonObject.Member component : components) {
             String componentId = component.getName();
-            JsonObject componentObject = getAsObjectSafely(component.getValue(), "components." + componentId);
+            JsonValue componentObject = component.getValue();
 
             ComponentPersistenceType type = registry.get(componentId);
 
-            PersistentData parsedData = type.parser.parse(componentObject, variableStorage);
+
+            PersistentData parsedData;
+            try {
+                parsedData = type.parser.parse(componentObject, variableStorage);
+            } catch (JsonComponentParseException e) {
+                throw new JsonComponentParseException("Failed to load component '" + componentId + "'", e);
+            }
             ComponentBlueprint factoryWithData = new PersistentDataComponentBlueprint(type.loader, parsedData);
 
             componentBlueprints.put(type, factoryWithData);

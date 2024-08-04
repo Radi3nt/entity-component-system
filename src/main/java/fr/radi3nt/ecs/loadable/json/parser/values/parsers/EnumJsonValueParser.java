@@ -6,9 +6,9 @@ import fr.radi3nt.json.JsonValue;
 
 public class EnumJsonValueParser implements JsonValueParser {
 
-    private final Class<Enum> currentClassObject;
+    private final Class<? extends Enum> currentClassObject;
 
-    public EnumJsonValueParser(Class<Enum> currentClassObject) {
+    public EnumJsonValueParser(Class<? extends Enum> currentClassObject) {
         this.currentClassObject = currentClassObject;
     }
 
@@ -17,6 +17,10 @@ public class EnumJsonValueParser implements JsonValueParser {
         if (value==null || !value.isString()) {
             throw JsonComponentParseException.shouldValue(path, "a string representing an enum constant");
         }
-        return Enum.valueOf(currentClassObject, value.asString());
+        try {
+            return Enum.valueOf(currentClassObject, value.asString().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new JsonComponentParseException("Failed to parse enum at path '" + path + "'", e);
+        }
     }
 }

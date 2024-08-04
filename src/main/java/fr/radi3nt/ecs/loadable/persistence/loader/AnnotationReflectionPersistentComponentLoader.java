@@ -130,4 +130,9 @@ public class AnnotationReflectionPersistentComponentLoader extends MappedPersist
             throw new UnsupportedOperationException("Component builder is invalid");
         return annotation.ids();
     }
+
+    @Override
+    public Class<? extends Component> getLoadedClass() {
+        return componentClass;
+    }
 }

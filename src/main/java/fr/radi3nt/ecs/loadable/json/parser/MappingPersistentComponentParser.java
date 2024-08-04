@@ -21,14 +21,19 @@ public class MappingPersistentComponentParser implements PersistentComponentPars
     }
 
     @Override
-    public MappedPersistentData parse(JsonObject jsonObject, VariableStorage variableStorage) throws JsonComponentParseException {
+    public MappedPersistentData parse(JsonValue value, VariableStorage variableStorage) throws JsonComponentParseException {
         Map<String, Object> keyValue = new HashMap<>();
-        addEntries(keyValue, "", jsonObject, variableStorage);
+        if (customValues.isCustomValue("")) {
+            keyValue.put("", customValues.parseCustom(value, "", variableStorage));
+        }
+        if (value.isObject()) {
+            addEntries(keyValue, "", value, variableStorage);
+        }
         return new MappedPersistentData(keyValue);
     }
 
-    private void addEntries(Map<String, Object> keyValue, String currentPath, JsonObject object, VariableStorage variableStorage) throws JsonComponentParseException {
-        for (JsonObject.Member member : object) {
+    private void addEntries(Map<String, Object> keyValue, String currentPath, JsonValue object, VariableStorage variableStorage) throws JsonComponentParseException {
+        for (JsonObject.Member member : object.asObject()) {
             String id = currentPath + member.getName();
             JsonValue value = member.getValue();
 
@@ -39,8 +44,6 @@ public class MappingPersistentComponentParser implements PersistentComponentPars
 
             if (value.isObject()) {
                 addEntries(keyValue, id + nestingSeparatorChar, value.asObject(), variableStorage);
-            } else {
-                System.err.println("Value at path " + id + " is not registered, skipping");
             }
         }
     }

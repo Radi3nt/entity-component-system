@@ -34,7 +34,7 @@ public class JsonCustomValuesParser {
                 continue;
             }
             for (Parameter parameter : declaredConstructor.getParameters()) {
-                String[] names = getNames(parameter, "Could not find ComponentParameterPersistent annotation on parameter " + parameter.getName() + " in constructor of class " + aClass.getName() + ", unable to create parsers", "Field for parameter " + parameter.getName() + "in constructor of class " + aClass.getName() + " isn't annotated with ComponentFieldPersistent");
+                String[] names = getNames(parameter, "Could not find ComponentParameterPersistent annotation on parameter " + parameter.getName() + " in constructor of class " + aClass.getName() + ", unable to create parsers", "Field for parameter " + parameter.getName() + " in constructor of class " + aClass.getName() + " isn't annotated with ComponentFieldPersistent");
                 addToVariables(names, variables, parserForClass(registry, parameter.getType()));
             }
         }
@@ -45,7 +45,7 @@ public class JsonCustomValuesParser {
             }
 
             for (Parameter parameter : declaredMethod.getParameters()) {
-                String[] names = getNames(parameter, "Could not find ComponentParameterPersistent annotation on parameter " + parameter.getName() + " in method " + declaredMethod.getName() + " of class " + aClass.getName() + ", unable to create parsers", "Field for parameter " + parameter.getName() + "in method " + declaredMethod.getName() + " of class " + aClass.getName() + " isn't annotated with ComponentFieldPersistent");
+                String[] names = getNames(parameter, "Could not find ComponentParameterPersistent annotation on parameter " + parameter.getName() + " in method " + declaredMethod.getName() + " of class " + aClass.getName() + ", unable to create parsers", "Field for parameter " + parameter.getName() + " in method " + declaredMethod.getName() + " of class " + aClass.getName() + " isn't annotated with ComponentFieldPersistent");
                 addToVariables(names, variables, parserForClass(registry, parameter.getType()));
             }
         }

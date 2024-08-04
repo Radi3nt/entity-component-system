@@ -7,5 +7,6 @@ import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
 public interface PersistentComponentLoader {
 
     Component load(PersistentData data) throws ComponentPersistenceException;
+    Class<? extends Component> getLoadedClass();
 
 }
