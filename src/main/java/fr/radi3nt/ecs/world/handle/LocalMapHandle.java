@@ -2,9 +2,11 @@ package fr.radi3nt.ecs.world.handle;
 
 import fr.radi3nt.ecs.components.Component;
 import fr.radi3nt.ecs.entity.ECSEntity;
+import fr.radi3nt.ecs.entity.HandledEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,11 +70,24 @@ public class LocalMapHandle implements ComponentWorldHandle {
     }
 
     @Override
+    public Collection<Component> get(HandledEntity handledEntity) {
+        return Collections.unmodifiableCollection(entityComponents.values());
+    }
+
+    @Override
     public void clear(ECSEntity entity) {
         Collection<Component> toRemove = new ArrayList<>(this.entityComponents.values());
         entityComponents.clear();
         for (Component component : toRemove) {
             removeComponent(component);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "LocalMapHandle{\n" +
+                "entityComponents=" + entityComponents +
+                ",\n worldComponentStorage=" + worldComponentStorage +
+                "\n}";
     }
 }
