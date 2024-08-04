@@ -7,6 +7,7 @@ import fr.radi3nt.ecs.world.ECSEntityProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public class EntityBlueprint {
 
@@ -19,6 +20,10 @@ public class EntityBlueprint {
     public ECSEntity create(ECSEntityProvider provider) {
         Collection<Component> components = createComponents();
         return provider.create(components);
+    }
+
+    public Supplier<ECSEntity> supplier(ECSEntityProvider provider) {
+        return () -> create(provider);
     }
 
     private Collection<Component> createComponents() {
