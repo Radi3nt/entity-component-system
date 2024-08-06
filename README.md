@@ -1,33 +1,78 @@
-package fr.radi3nt.ecs.main;
 
-import fr.radi3nt.ecs.entity.ECSEntity;
-import fr.radi3nt.ecs.loadable.json.JsonEntityBlueprintLoader;
-import fr.radi3nt.ecs.loadable.json.exceptions.JsonComponentParseException;
-import fr.radi3nt.ecs.loadable.json.parser.MappingPersistentComponentParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.JsonCustomValuesParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.parsers.*;
-import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.DoubleJsonValueParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.FloatJsonValueParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.IntJsonValueParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.parsers.number.LongJsonValueParser;
-import fr.radi3nt.ecs.loadable.json.parser.values.registry.ClassJsonValueParserRegistry;
-import fr.radi3nt.ecs.loadable.json.parser.values.registry.MapClassJsonValueParserRegistry;
-import fr.radi3nt.ecs.loadable.json.registry.ComponentPersistenceType;
-import fr.radi3nt.ecs.loadable.json.registry.MapComponentBlueprintRegistry;
-import fr.radi3nt.ecs.main.components.*;
-import fr.radi3nt.ecs.persistence.blueprint.EntityBlueprint;
-import fr.radi3nt.ecs.persistence.data.MappedPersistentData;
-import fr.radi3nt.ecs.persistence.exception.ComponentPersistenceException;
-import fr.radi3nt.ecs.world.ECSWorld;
-import fr.radi3nt.ecs.world.ListingECSWorld;
-import fr.radi3nt.json.Json;
-import fr.radi3nt.json.JsonValue;
+# Entity Component System
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+ECS interface and implementation in Java
 
+## Features
+
+- Loading entities from json files
+- Dynamically mutate entities at runtime
+- Iterate over a specific set of components only
+- Free to update your systems in any way you want (note that you can use `SystemScheduler` class)
+## Roadmap
+
+- More efficient ECS implementation using sparse sets
+
+
+## Installation
+
+Install with maven; you'll need one dependency, which you can get by clicking on the link below:
+
+- [JavaUtil](https://github.com/Radi3nt/JavaUtil)
+
+(More precisely the JsonHelper module)
+## Usage/Examples
+
+Example component class:
+
+```java
+public class HealthComponent extends EntityComponent {
+
+    @ComponentFieldPersistent
+    public float health;
+
+    @ComponentBuilderPersistent
+    public HealthComponent(
+            @ComponentParameterFieldPersistent(fieldName = "health")
+            float health
+    ) {
+        this.health = health;
+    }
+
+    public HealthComponent() {
+    }
+}
+
+```
+
+Example system class:
+
+```java
+public class DeathOnHealthReachesZeroSystem {
+
+    private final ECSWorld world;
+
+    public DeathOnHealthReachesZeroSystem(ECSWorld world) {
+        this.world = world;
+    }
+
+    public void update() {
+        for (Iterator<DeathOnHealthReachesZeroComponent> it = world.getComponentIterator(DeathOnHealthReachesZeroComponent.class); it.hasNext(); ) {
+            DeathOnHealthReachesZeroComponent component = it.next();
+            if (component.isEnabled()) {
+                ECSEntity current = component.current;
+                HealthComponent healthComponent = current.getComponent(HealthComponent.class);
+                if (healthComponent.health<=0)
+                    current.getComponent(DeathStateComponent.class).dead = true;
+            }
+        }
+    }
+}
+```
+
+Putting it together (+ custom value parser example)
+
+```java
 public class MainECSDemo {
 
     public static void main(String[] args) throws IOException, ComponentPersistenceException, JsonComponentParseException {
@@ -67,8 +112,17 @@ public class MainECSDemo {
 
         DeathOnHealthReachesZeroSystem onHealthReachesZeroSystem = new DeathOnHealthReachesZeroSystem(world);
         onHealthReachesZeroSystem.update();
-
-        System.out.println("hey");
     }
 
 }
+
+```
+## Support
+
+For support, email pro.radi3nt@gmail.com or send a message on discord to @radi3nt.
+
+
+## Authors
+
+- [@radi3nt](https://github.com/Radi3nt)
+
